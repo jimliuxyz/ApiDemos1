@@ -1,0 +1,88 @@
+/*
+ * Copyright (C) 2007 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.example.android.apis.view;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.PersistableBundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.example.android.apis.R;
+
+
+public class RadioGroup1 extends Activity implements RadioGroup.OnCheckedChangeListener,
+        View.OnClickListener {
+
+    private TextView mChoice;
+    private RadioGroup mRadioGroup;
+
+    //seeu 在翻轉手機重新onCreate時 view中部分的值能被還原 例如checked與否
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.radio_group_1);
+        mRadioGroup = (RadioGroup) findViewById(R.id.menu);
+
+        // test adding a radio button programmatically
+        RadioButton newRadioButton = new RadioButton(this);
+        newRadioButton.setText(R.string.radio_group_snack);
+        newRadioButton.setId(R.id.snack);
+        LinearLayout.LayoutParams layoutParams = new RadioGroup.LayoutParams(
+                RadioGroup.LayoutParams.WRAP_CONTENT,
+                RadioGroup.LayoutParams.WRAP_CONTENT);
+        mRadioGroup.addView(newRadioButton, 0, layoutParams);
+
+        // test listening to checked change events
+        String selection = getString(R.string.radio_group_selection);
+        mRadioGroup.setOnCheckedChangeListener(this);
+        mChoice = (TextView) findViewById(R.id.choice);
+        mChoice.setText(selection + mRadioGroup.getCheckedRadioButtonId());
+
+        // test clearing the selection
+        Button clearButton = (Button) findViewById(R.id.clear);
+        clearButton.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        System.out.println("===onSaveInstanceState===1");
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        System.out.println("===onSaveInstanceState===2");
+    }
+
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+        String selection = getString(R.string.radio_group_selection);
+        String none = getString(R.string.radio_group_none);
+        mChoice.setText(selection +
+                (checkedId == View.NO_ID ? none : checkedId));
+    }
+
+    public void onClick(View v) {
+        mRadioGroup.clearCheck();
+    }
+}
